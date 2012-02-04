@@ -22,4 +22,5 @@ directory in in your themes directory, such as ~/.config/awesome/themes/conscien
 rc.lua file:
 
     beautiful.init("path/to/themes/conscience/theme.lua")
+    beautiful.onscreen.init()
 
