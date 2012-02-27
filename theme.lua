@@ -6,7 +6,7 @@ local util = require("awful.util")
 theme = {}
 theme.name = "Conscience v0.2"
 theme.theme_dir = awful.util.getdir("config") .. "/themes/conscience"
-theme.wallpaper_cmd = { "awsetbg " .. theme.theme_dir .. "/background.jpg" }
+theme.wallpaper_cmd = { "awsetbg " .. theme.theme_dir .. "/background.png" }
 theme.icon_dir = theme.theme_dir .. '/icons'
 theme.onscreen_file = "/onscreen.lua"
 
@@ -26,7 +26,7 @@ theme.bg_focus      = png_res("bg_focus.png") -- Average color #272727
 theme.bg_focus_color = "#444444"
 theme.bg_urgent     = "#7f7f7f"
 theme.bg_minimize   = "#444444"
-theme.bg_onscreen   = "#22222200"
+theme.bg_onscreen   = "#222222"
 
 theme.fg_normal     = "#dddddd"
 theme.fg_focus      = "#ffffff" --"#ffffff"

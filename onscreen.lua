@@ -15,9 +15,9 @@ function onscreen.init()
 end
 
 function onscreen.init_logwatcher()
-   local wheight = 200
-   local wb = infojets.create_wibox({ width = 700, height = wheight,
-                                      x = 20, y = -20, bg_color = theme.bg_onscreen })
+   local wheight = 195
+   local wb = infojets.create_wibox({ width = 695, height = wheight,
+                                      x = 23, y = -29, bg_color = theme.bg_onscreen })
    w = infojets.logwatcher.new()
    w:add_log_directory('/home/unlogic', { { file = '.xsession-errors',
                                             mask = "(.+)" } })
@@ -31,17 +31,18 @@ function onscreen.init_logwatcher()
                          },
                           { file = 'errors.log', 
                             mask = ".+ (%d%d:%d%d:%d%d )%w+ (.+)",
-                            ignore = { "dhcpcd" } 
+                            ignore = { "dhcpcd", "sendmail" } 
                          },
                           { file = 'kernel.log',
                             mask = ".+ (%d%d:%d%d:%d%d )%w+ (%w+: )%[%s*[%d%.]+%] (.+)" 
                          },
                           { file = 'messages.log',
                             mask = ".+ (%d%d:%d%d:%d%d )%w+ (.+)",
-                            ignore = { "\\-\\- MARK \\-\\-" } 
+                            ignore = { "\\-\\- MARK \\-\\-",
+                                       " kernel: " }
                          },
-                          { file = 'wicd/wicd.log',
-                            mask = "%d+%/%d+%/%d+ (.+)" 
+                          { file = 'pacman.log',
+                            mask = "%[(%d%d%d%d%-%d%d%-%d%d %d%d:%d%d)%](.+)" 
                          } 
                        })
    w.font = 'Helvetica 9'
@@ -54,9 +55,9 @@ function onscreen.init_logwatcher()
 end
 
 function onscreen.init_processwatcher()
-   local wheight = 200
+   local wheight = 193
    local wb = infojets.create_wibox({ width = 200, height = wheight,
-                                      x = -20, y = -25, bg_color = theme.bg_onscreen })
+                                      x = -26, y = -31, bg_color = theme.bg_onscreen })
    w = infojets.processwatcher.new()
    w:set_process_sorters({ { name = "Top CPU",
                              sort_by = "pcpu",
@@ -80,11 +81,12 @@ function onscreen.init_calendar()
    orglendar.today_color = theme.fg_onscreen
    orglendar.event_color = theme.motive
    orglendar.font = "DejaVu Sans Mono 10"
-   orglendar.char_width = 9
+   orglendar.char_width = 8.20
+   orglendar.max_task = 25
    
    local cal_box_height = 120
    local cal_box = infojets.create_wibox({ width = 180, height = cal_box_height,
-                                           x = -20, y = 30, bg_color = theme.bg_onscreen })
+                                           x = -20, y = 45, bg_color = theme.bg_onscreen })
    infojets.reposition_wibox(cal_box)
    local cal_layout = wibox.layout.align.horizontal()
    local cal_tb = wibox.widget.textbox()
@@ -92,8 +94,8 @@ function onscreen.init_calendar()
    cal_layout:set_right(cal_tb)
    cal_box:set_widget(cal_layout)
    
-   local todo_box = infojets.create_wibox({ width = 300, height = 300,
-                                            x = -20, y = 30 + cal_box_height, 
+   local todo_box = infojets.create_wibox({ width = 300, height = 290,
+                                            x = -30, y = 47 + cal_box_height, 
                                             bg_color = theme.bg_onscreen })
    local todo_tb = wibox.widget.textbox()
    local todo_layout = wibox.layout.align.horizontal()
@@ -159,9 +161,9 @@ end
 
 function onscreen.init_jetclock()
    local scrwidth = 1280 -- For current display
-   local radius = 150
-   local wb = infojets.create_wibox({ width = radius * 2, height = radius * 2 + 100,
-                                      x = scrwidth / 2 - radius, y = 50, 
+   local radius = 132
+   local wb = infojets.create_wibox({ width = radius * 2, height = radius * 2 + 95,
+                                      x = scrwidth / 2 - radius - 2, y = 100, 
                                       bg_color = theme.bg_onscreen })
    w = infojets.jetclock.new()
    w:set_radius(radius)
