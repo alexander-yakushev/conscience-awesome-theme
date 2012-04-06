@@ -3,7 +3,6 @@
 local infojets = require("infojets")
 local pango = infojets.util.pango
 local wibox = require("wibox")
-require('orglendar')
 
 local onscreen = {}
 
@@ -77,13 +76,16 @@ end
 
 function onscreen.init_calendar()
    local editor = "emc"
+
+   require('orglendar')
    orglendar.files = { "/home/unlogic/Documents/Notes/edu.org" }
+   orglendar.text_color = theme.fg_focus
    orglendar.today_color = theme.fg_onscreen
    orglendar.event_color = theme.motive
    orglendar.font = "DejaVu Sans Mono 10"
    orglendar.char_width = 8.20
    orglendar.max_task = 25
-   
+
    local cal_box_height = 120
    local cal_box = infojets.create_wibox({ width = 180, height = cal_box_height,
                                            x = -20, y = 45, bg_color = theme.bg_onscreen })
