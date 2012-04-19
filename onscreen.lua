@@ -5,8 +5,12 @@ local pango = infojets.util.pango
 local wibox = require("wibox")
 
 local onscreen = {}
+local config = {}
 
 function onscreen.init()
+   if theme.onscreen_config then
+      config = theme.onscreen_config
+   end
    onscreen.init_logwatcher()
    onscreen.init_processwatcher()
    onscreen.init_calendar()
@@ -14,26 +18,31 @@ function onscreen.init()
 end
 
 function onscreen.init_logwatcher()
-   local wheight = 195
-   local wb = infojets.create_wibox({ width = 695, height = wheight,
-                                      x = 23, y = -29, bg_color = theme.bg_onscreen })
+   local c = config.logwatcher or {}
+   local wheight = c.height or 195
+   local wb = infojets.create_wibox({ width = c.width or 695,
+                                      height = wheight,
+                                      x = c.x or 23,
+                                      y = c.y or -29,
+                                      bg_color = theme.bg_onscreen })
    w = infojets.logwatcher.new()
-   w:add_log_directory('/home/unlogic', { { file = '.xsession-errors',
-                                            mask = "(.+)" } })
-   w:add_log_directory('/var/log', { 
-                          { file = 'auth.log', 
+   -- w:add_log_directory('/home/unlogic', { { file = '.xsession-errors',
+   --                                          mask = "(.+)" } })
+   w:add_log_directory('/var/log', {
+                          { file = 'auth.log',
                             mask = ".+ (%d%d:%d%d:%d%d )%w+ (.+)",
-                            ignore = { "crond:session" } 
+                            ignore = { "crond:session" }
                          },
-                          { file = 'user.log', 
-                            mask = ".+ (%d%d:%d%d:%d%d )%w+ (.+)" 
-                         },
-                          { file = 'errors.log', 
+                         --  { file = 'user.log',
+                         --    mask = ".+ (%d%d:%d%d:%d%d )%w+ (.+)",
+                         --    ignore = { "mtp-probe:" }
+                         -- },
+                          { file = 'errors.log',
                             mask = ".+ (%d%d:%d%d:%d%d )%w+ (.+)",
-                            ignore = { "dhcpcd", "sendmail" } 
+                            ignore = { "dhcpcd", "sendmail" }
                          },
                           { file = 'kernel.log',
-                            mask = ".+ (%d%d:%d%d:%d%d )%w+ (%w+: )%[%s*[%d%.]+%] (.+)" 
+                            mask = ".+ (%d%d:%d%d:%d%d )%w+ (%w+: )%[%s*[%d%.]+%] (.+)"
                          },
                           { file = 'messages.log',
                             mask = ".+ (%d%d:%d%d:%d%d )%w+ (.+)",
@@ -41,22 +50,26 @@ function onscreen.init_logwatcher()
                                        " kernel: " }
                          },
                           { file = 'pacman.log',
-                            mask = "%[(%d%d%d%d%-%d%d%-%d%d %d%d:%d%d)%](.+)" 
-                         } 
+                            mask = "%[(%d%d%d%d%-%d%d%-%d%d %d%d:%d%d)%](.+)" ,
+                            ignore = { "Running " }
+                         }
                        })
    w.font = 'Helvetica 9'
    w.title_font = 'Helvetica 9'
    w:calculate_line_count(wheight)
-   w.line_length = 120
+   w.line_length = c.line_length or 120
    w:run()
 
    wb:set_widget(w.widget)
 end
 
 function onscreen.init_processwatcher()
-   local wheight = 193
-   local wb = infojets.create_wibox({ width = 200, height = wheight,
-                                      x = -26, y = -31, bg_color = theme.bg_onscreen })
+   local c = config.processwatcher or {}
+   local wheight = c.height or 193
+   local wb = infojets.create_wibox({ width = c.width or 200, height = wheight,
+                                      x = c.x or -26, y = c.y or -31,
+                                      bg_color = theme.bg_onscreen })
+   infojets.processwatcher.default.current_file = 2
    w = infojets.processwatcher.new()
    w:set_process_sorters({ { name = "Top CPU",
                              sort_by = "pcpu",
@@ -68,36 +81,40 @@ function onscreen.init_processwatcher()
    w.font = 'DejaVu Sans Mono 10'
    w.title_font = 'Helvetica 10'
    w:calculate_line_count(wheight)
-   w.line_length = 40
+   w.line_length = c.line_length or 40
    w:run()
 
    wb:set_widget(w.widget)
 end
 
 function onscreen.init_calendar()
-   local editor = "emc"
+   local c = config.calendar or {}
+   local editor = "emacsclient -c"
 
    require('orglendar')
    orglendar.files = { "/home/unlogic/Documents/Notes/edu.org" }
-   orglendar.text_color = theme.fg_focus
-   orglendar.today_color = theme.fg_onscreen
+   orglendar.text_color = c.text_color or theme.fg_focus
+   orglendar.today_color = c.today_color or theme.fg_onscreen
    orglendar.event_color = theme.motive
    orglendar.font = "DejaVu Sans Mono 10"
    orglendar.char_width = 8.20
-   orglendar.max_task = 25
+   orglendar.limit_todo_length = c.limit_todo_length or 36
+   orglendar.parse_on_show = false
 
-   local cal_box_height = 120
-   local cal_box = infojets.create_wibox({ width = 180, height = cal_box_height,
-                                           x = -20, y = 45, bg_color = theme.bg_onscreen })
+   local cal_box_height = c.cal_height or 120
+   local cal_box = infojets.create_wibox({ width = c.cal_width or 170, height = cal_box_height,
+                                           x = c.cal_x or -35, y = c.cal_y or 45,
+                                           bg_color = theme.bg_onscreen })
    infojets.reposition_wibox(cal_box)
    local cal_layout = wibox.layout.align.horizontal()
    local cal_tb = wibox.widget.textbox()
    cal_tb:set_valign("top")
    cal_layout:set_right(cal_tb)
    cal_box:set_widget(cal_layout)
-   
-   local todo_box = infojets.create_wibox({ width = 300, height = 290,
-                                            x = -30, y = 47 + cal_box_height, 
+
+   local todo_box = infojets.create_wibox({ width = c.todo_width or 300,
+                                            height = c.todo_height or 290,
+                                            x = c.todo_x or -30, y = (c.todo_y or 47) + cal_box_height,
                                             bg_color = theme.bg_onscreen })
    local todo_tb = wibox.widget.textbox()
    local todo_layout = wibox.layout.align.horizontal()
@@ -106,71 +123,77 @@ function onscreen.init_calendar()
    todo_box:set_widget(todo_layout)
 
    local offset = 0
-   local update_calendar =
+
+   local update_orglendar =
       function(inc_offset)
          offset = offset + inc_offset
-         local caltext = orglendar.generate_calendar(offset).calendar
-         cal_tb:set_markup(pango(caltext, { foreground = "#FFFFFF" }))
-      end
-   
-   local update_todo = 
-      function()
-         local query = os.date("%Y-%m-%d")
-         local todotext, _, length = orglendar.create_string(query,motive,"DejaVu Sans Mono 10")
-         if todotext == '<span font="DejaVu Sans Mono 10"></span>' then 
-            todotext = '<span font="DejaVu Sans Mono 10"> </span>'
-         end
-         todo_tb:set_markup(pango(todotext, { foreground = "#FFFFFF" }))
-         todo_box.width = length * orglendar.char_width
+         local cal, todo = orglendar.get_calendar_and_todo_text(offset)
+
+         cal_tb:set_markup(cal)
+         todo_tb:set_markup(todo)
+         todo_box.width = orglendar.limit_todo_length * orglendar.char_width
          infojets.reposition_wibox(todo_box)
-         update_calendar(0)
       end
-   
+
    cal_tb:buttons(awful.util.table.join(
                      awful.button({ }, 2,
                                   function ()
                                      offset = 0
-                                     update_calendar(0)
+                                     update_orglendar(0)
                                   end),
-                     awful.button({ }, 4, 
+                     awful.button({ }, 4,
                                   function ()
-                                     update_calendar(-1)
+                                     update_orglendar(-1)
                                   end),
-                     awful.button({ }, 5, 
+                     awful.button({ }, 5,
                                   function ()
-                                     update_calendar(1)
+                                     update_orglendar(1)
                                   end)))
    todo_tb:buttons(awful.util.table.join(
                       awful.button({ }, 1,
                                    function ()
                                       awful.util.spawn(editor .. " " .. orglendar.files[1])
                                    end),
-                      awful.button({ }, 4, 
+                      awful.button({ }, 4,
                                    function ()
-                                      update_calendar(-1)
+                                      update_orglendar(-1)
                                    end),
-                      awful.button({ }, 5, 
+                      awful.button({ }, 5,
                                    function ()
-                                      update_calendar(1)
+                                      update_orglendar(1)
                                    end),
-                      awful.button({ }, 3, 
+                      awful.button({ }, 3,
                                    function ()
-                                      update_todo()
+                                      orglendar.parse_agenda()
+                                      update_orglendar(0)
                                    end)))
-   update_todo()
+   update_orglendar(0)
    --   repeat_every(update_todo,600)
 end
 
 function onscreen.init_jetclock()
-   local scrwidth = 1280 -- For current display
-   local radius = 132
-   local wb = infojets.create_wibox({ width = radius * 2, height = radius * 2 + 95,
-                                      x = scrwidth / 2 - radius - 2, y = 100, 
+   local c = config.clock or {}
+   local scrwidth = c.scrwidth or 1280 -- For current display
+   local radius = c.radius or 132
+   local wb = infojets.create_wibox({ width = radius * 2, height = radius * 2 + (c.height or 95),
+                                      x = c.x or (scrwidth / 2 - radius - 2),
+                                      y = c.y or 100,
                                       bg_color = theme.bg_onscreen })
+
+   infojets.jetclock.bg_color      = c.bg_color or "#222222CC"
+   infojets.jetclock.ring_bg_color = c.ring_bg_color or "#AAAAAA33"
+   infojets.jetclock.ring_fg_color = c.ring_fg_color or "#AAAAAAFF"
+   infojets.jetclock.hand_color    = c.hand_color or "#CCCCCCCC"
+   infojets.jetclock.hand_motive   = c.hand_motive or "#76eec6CC"
+   infojets.jetclock.text_hlight   = c.text_hlight or theme.motive
+   infojets.jetclock.text_font     = c.text_font or "Helvetica 11"
+   infojets.jetclock.shift_str     = c.shift or "    "
+
    w = infojets.jetclock.new()
    w:set_radius(radius)
+
    remind = function(...) w:remind(...) end
-   
+
    w:run()
    wb:set_widget(w.widget)
 end
