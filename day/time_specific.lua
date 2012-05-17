@@ -22,13 +22,18 @@ theme.border_normal   = "#222222"
 theme.border_focus    = "#000000"
 theme.border_marked   = "#91231c"
 
+theme.blingbling = { text_color = theme.fg_focus,
+                     graph_color = "#dec9b4",
+                     bg_graph_color = "#590900" }
+
 theme.onscreen_config = { logwatcher = { x = -20, y = -20, line_length = 80, width = 470 },
                           processwatcher = { x = -20, y = 30 },
                           clock = { x = 398, y = -1, radius = 160, height = 85,
                                     ring_bg_color = theme.motive2 .. "33",
                                     ring_fg_color = theme.motive2 .. "FF",
                                     hand_color = theme.motive2 .. "CC",
-                                    shift = "       "},
+                                    shift = "       ",
+                                    shape = "circle" },
                           calendar = { text_color = theme.fg_normal,
                                        today_color = theme.motive2,
                                        cal_x = 15, todo_x = 15,

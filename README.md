@@ -11,9 +11,9 @@ those layouts).
 
 Conscience depends on the following projects:
 
-* [awesome pre-4.0](http://git.naquadah.org/awesome.git)
-* [infojets v.0.3.0](https://github.com/alexander-yakushev/infojets)
-* [orglendar v0.6.0](https://github.com/alexander-yakushev/Orglendar)
+* [awesome pre-3.5](http://git.naquadah.org/awesome.git)
+* [infojets v.0.4.0](https://github.com/alexander-yakushev/infojets)
+* [orglendar v1.0.0](https://github.com/alexander-yakushev/Orglendar)
 
 ## Instalation ##
 
